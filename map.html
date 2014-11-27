@@ -12,7 +12,8 @@
 
   var svg = d3.select("body").append("svg:svg")
     .attr("width", w)
-    .attr("height", h);
+    .attr("height", h)
+    .attr("id", "container");
 
   var projection = d3.geo.mercator()
     .scale(250)
@@ -60,11 +61,11 @@
 
   function drawTimeline() {
     var margin = {top: 20, right: 0, bottom: 30, left: 0},
-    width = 1200 - margin.left - margin.right,
-    height = 100 - margin.top - margin.bottom;
+    width = 4000 - margin.left - margin.right,
+    height = 150 - margin.top - margin.bottom;
 
     var x = d3.time.scale()
-      .range([0, width], .1);
+        .range([0, width]);
 
     var y = d3.scale.linear()
         .range([height, 0]);
@@ -83,6 +84,8 @@
     var svg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
+        .attr("id", "timeline")
+        .style("top", (h+50) + "px")
       .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -115,7 +118,7 @@
         .enter().append("rect")
           .attr("class", "bar")
           .attr("x", function(d) { return x(d.date); })
-          .attr("width", 3)
+          .attr("width", 5)
           .attr("y", function(d) { return y(1); })
           .attr("height", function(d) { return height - y(1); })
           .attr("title", function(d) { return d.place; })

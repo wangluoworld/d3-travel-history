@@ -2,6 +2,10 @@ body {
 	font: 10px sans-serif;
 }
 
+#container {
+	position: fixed;
+}
+
 .country {
 	fill: #999;
 }
@@ -22,7 +26,7 @@ body {
 }
 
 #tooltip {
-	position: absolute;
+	position: fixed;
 	background: #000;
 	padding: 3px 7px;
 	color: #fff;
@@ -31,4 +35,8 @@ body {
 
 .bar {
 	fill: #999;
+}
+
+#timeline {
+	position: relative;
 }
