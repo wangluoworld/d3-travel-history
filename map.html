@@ -93,7 +93,8 @@
         "date": timeFormat.parse(d.date).getTime(),
         "place": d.place,
         "lat": d.lat,
-        "lon": d.lon
+        "lon": d.lon,
+        "comment": d.comment
       }
     }, function(error, data) {
 
@@ -127,16 +128,21 @@
   function highlightMarker(elem, d) {
     var tooltipX = parseFloat(elem.attr("cx")) - 20;
     var tooltipY = parseFloat(elem.attr("cy")) - 20;
-    tooltip.html((d.humanReadableDate || d.date) + " " + d.place)
-      .style("opacity", 0.9)
+    var comment = (d.comment != undefined && d.comment.length) ? " - " + d.comment : "";
+    tooltip.html((d.humanReadableDate || d.date) + " " + d.place + comment)
       .style("left", tooltipX + "px")
-      .style("top", tooltipY + "px");
+      .style("top", tooltipY + "px")
+      .transition()
+      .duration(800)
+      .style("opacity", 0.9);
     elem.attr("id", "highlight");
   }
 
   function unhighlightMarker(d) {
     d.attr("id", "");
-    tooltip.style("opacity", 0)
+    tooltip.transition()
+      .duration(800)
+      .style("opacity", 0)
       .style("left", 0) // move it out of the map otherwise it blocks mouseovers
       .style("top", 0);
   }
