@@ -12,3 +12,11 @@ body {
 	stroke: #000;
 	shape-rendering: crispEdges;
 }
+
+.marker {
+	fill: red;
+}
+
+#highlight {
+	fill: blue;
+}
