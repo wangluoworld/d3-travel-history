@@ -29,8 +29,13 @@
       .attr("class", "country");
 
     // Need to do this in here so the map always loads first
+    drawTimeline();
+    drawPlaces();
+
+  });
+
+  function drawPlaces() {
     d3.csv("places.csv").get(function(error, places) {
-      drawTimeline();
       svg.selectAll("circle")
         .data(places)
         .enter().append("circle")
@@ -46,8 +51,7 @@
         })
         .attr("r", 2);
     });
-
-  });
+  }
 
   function drawTimeline() {
     var margin = {top: 20, right: 0, bottom: 30, left: 0},
