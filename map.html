@@ -8,7 +8,7 @@
   <script src="vendor/topojson.min.js"></script>
   <script type="text/javascript">
 
-  var w = 1200, h = 800;
+  var w = 1200, h = 700;
 
   var svg = d3.select("body").append("svg:svg")
     .attr("width", w)
@@ -21,6 +21,8 @@
   var path = d3.geo.path()
     .projection(projection);
 
+  var timeFormat = d3.time.format("%x");
+
   d3.json("vendor/world-50m.json", function(world) {
     svg.selectAll(".country")
       .data(topojson.feature(world, world.objects.countries).features)
@@ -28,7 +30,10 @@
       .attr("d", path)
       .attr("class", "country");
 
+    // Need to do this in here so the map always loads first
     d3.csv("places.csv").get(function(error, places) {
+      var dates = places.map(function(p) { return timeFormat.parse(p.date); });
+      drawTimeline(dates);
       svg.selectAll("circle")
         .data(places)
         .enter().append("circle")
@@ -44,6 +49,38 @@
     });
 
   });
+
+    function drawTimeline(dates) {
+      var margin = {top: 0, right: 10, bottom: 50, left: 0},
+        width = 1000 - margin.left - margin.right,
+        height = 100 - margin.top - margin.bottom;
+
+      var x = d3.time.scale()
+          .domain([dates[0], dates[dates.length-1]])
+          .range([0, width]);
+
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .ticks(d3.time.year, 1)
+          .tickFormat(d3.time.format("%Y"));
+
+      var svg = d3.select("body").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+        .selectAll("text")
+          .attr("y", 0)
+          .attr("x", 9)
+          .attr("dy", ".35em")
+          .attr("transform", "rotate(90)")
+          .style("text-anchor", "start");
+    }
 
 </script>
 </body>
