@@ -1,15 +1,15 @@
-.country {
-	fill: #999;
-}
-
 body {
 	font: 10px sans-serif;
+}
+
+.country {
+	fill: #999;
 }
 
 .axis line,
 .axis path {
 	fill: none;
-	stroke: #000;
+	stroke: #999;
 	shape-rendering: crispEdges;
 }
 
@@ -19,4 +19,16 @@ body {
 
 #highlight {
 	fill: blue;
+}
+
+#tooltip {
+	position: absolute;
+	background: #000;
+	padding: 3px 7px;
+	color: #fff;
+	opacity: 0;
+}
+
+.bar {
+	fill: #999;
 }

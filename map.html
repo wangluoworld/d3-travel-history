@@ -21,6 +21,9 @@
   var path = d3.geo.path()
     .projection(projection);
 
+  var tooltip = d3.select("body").append("div")
+    .attr("id", "tooltip");
+
   d3.json("vendor/world-50m.json", function(world) {
     svg.selectAll(".country")
       .data(topojson.feature(world, world.objects.countries).features)
@@ -49,7 +52,9 @@
         .attr("cy", function(d) {
           return projection([d.lon, d.lat])[1];
         })
-        .attr("r", 2);
+        .attr("r", 2)
+        .on("mouseenter", highlightMarkerFromMap)
+        .on("mouseout", unhighlightMarkerFromMap);
     });
   }
 
@@ -84,6 +89,7 @@
     d3.csv("places.csv", function(d) {
       var timeFormat = d3.time.format("%x");
       return {
+        "humanReadableDate": d.date,
         "date": timeFormat.parse(d.date).getTime(),
         "place": d.place,
         "lat": d.lat,
@@ -108,25 +114,52 @@
         .enter().append("rect")
           .attr("class", "bar")
           .attr("x", function(d) { return x(d.date); })
-          .attr("width", 2)
+          .attr("width", 3)
           .attr("y", function(d) { return y(1); })
           .attr("height", function(d) { return height - y(1); })
           .attr("title", function(d) { return d.place; })
-          .on("mouseenter", function(d) {
-            d3.select(".marker[data-lat='" + d.lat + "'][data-lon='" + d.lon + "']").attr("id", "highlight");
-          })
-          .on("mouseout", function(d) {
-            d3.select(".marker[data-lat='" + d.lat + "'][data-lon='" + d.lon + "']").attr("id", "");
-          });
+          .on("mouseenter", highlightMarkerFromTimeline)
+          .on("mouseout", unhighlightMarkerFromTimeline);
 
     });
   }
 
+  function highlightMarker(elem, d) {
+    var tooltipX = parseFloat(elem.attr("cx")) - 20;
+    var tooltipY = parseFloat(elem.attr("cy")) - 20;
+    tooltip.html((d.humanReadableDate || d.date) + " " + d.place)
+      .style("opacity", 0.9)
+      .style("left", tooltipX + "px")
+      .style("top", tooltipY + "px");
+    elem.attr("id", "highlight");
+  }
+
+  function unhighlightMarker(d) {
+    d.attr("id", "");
+    tooltip.style("opacity", 0)
+      .style("left", 0) // move it out of the map otherwise it blocks mouseovers
+      .style("top", 0);
+  }
+
+  function highlightMarkerFromMap(d) {
+    highlightMarker(d3.select(this), d);
+  }
+
+  function unhighlightMarkerFromMap(d) {
+    unhighlightMarker(d3.select(this));
+  }
+
+  function highlightMarkerFromTimeline(d) {
+    d3.select(this).attr("id", "highlight");
+    var marker = d3.select(".marker[data-lat='" + d.lat + "'][data-lon='" + d.lon + "']");
+    highlightMarker(marker, d);
+  }
+
+  function unhighlightMarkerFromTimeline(d) {
+    d3.select(this).attr("id", "");
+    unhighlightMarker(d3.select(".marker[data-lat='" + d.lat + "'][data-lon='" + d.lon + "']"));
+  }
+
 </script>
-<!-- <defs>
-  <filter id="blurFilter" y="-5" height="40">
-    <feGaussianBlur stdDeviation="3" y="-"/>
-  </filter>
-</defs> -->
 </body>
 </html>
